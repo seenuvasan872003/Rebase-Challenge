@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://rebase-todo.onrender.com/api';
+const API_URL = 'https://rebase-todo.onrender.com/api';
 
 function App() {
   const [todos, setTodos] = useState([]);
