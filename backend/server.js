@@ -21,8 +21,14 @@ const connectDB = async () => {
 connectDB();
 
 const todoSchema = new mongoose.Schema({
-  title: String,
-  completed: Boolean
+  title: {
+    type: String,
+    required: true
+  },
+  completed: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const Todo = mongoose.model('Todo', todoSchema);
@@ -46,6 +52,22 @@ app.post('/api/todos', async (req, res) => {
   try {
     const newTodo = await todo.save();
     res.status(201).json(newTodo);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+app.patch('/api/todos/:id', async (req, res) => {
+  try {
+    const todo = await Todo.findById(req.params.id);
+    if (!todo) return res.status(404).json({ message: 'Todo not found' });
+
+    if (req.body.completed !== undefined) {
+      todo.completed = req.body.completed;
+    }
+
+    const updatedTodo = await todo.save();
+    res.json(updatedTodo);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

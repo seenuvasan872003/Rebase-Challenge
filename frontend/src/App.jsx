@@ -26,6 +26,23 @@ function App() {
     setNewTodo('');
   };
 
+  const toggleTodo = async (id, currentStatus) => {
+    try {
+      const response = await fetch(`${API_URL}/todos/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed: !currentStatus })
+      });
+
+      if (response.ok) {
+        const updatedTodo = await response.json();
+        setTodos(prevTodos => prevTodos.map(todo => (todo._id === id ? updatedTodo : todo)));
+      }
+    } catch (err) {
+      console.error('Error toggling todo:', err);
+    }
+  };
+
   return (
     <div style={{ padding: '40px', background: '#0a0a0a', color: 'white', minHeight: '100vh' }}>
       <h1>Rebase Todo Challenge</h1>
@@ -42,7 +59,17 @@ function App() {
       </div>
       <ul>
         {todos.map(todo => (
-          <li key={todo._id}>{todo.title}</li>
+          <li key={todo._id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', padding: '10px', background: '#1a1a1a', borderRadius: '5px' }}>
+            <input 
+              type="checkbox" 
+              checked={todo.completed || false} 
+              onChange={() => toggleTodo(todo._id, todo.completed)}
+              style={{ marginRight: '15px', width: '20px', height: '20px', cursor: 'pointer', accentColor: '#ec4899' }}
+            />
+            <span style={{ textDecoration: todo.completed ? 'line-through' : 'none', color: todo.completed ? '#888' : 'white', fontSize: '1.2rem' }}>
+              {todo.title}
+            </span>
+          </li>
         ))}
       </ul>
     </div>
